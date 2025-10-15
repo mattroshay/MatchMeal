@@ -6,7 +6,8 @@ export default class extends Controller {
     "detectButton",
     "ingredientCheckbox",
     "generateButton",
-    "newIngredientInput"
+    "newIngredientInput",
+    "manualInput"
   ];
 
   connect() {
@@ -15,13 +16,25 @@ export default class extends Controller {
   }
 
   checkButtonStates() {
-    if (this.hasImageUploadTarget) {
-      this.detectButtonTarget.disabled = this.imageUploadTarget.files.length === 0;
+    if (!this.hasDetectButtonTarget) {
+      return;
     }
+
+    const hasImage =
+      this.hasImageUploadTarget && this.imageUploadTarget.files.length > 0;
+    const hasManual =
+      this.hasManualInputTarget &&
+      this.manualInputTarget.value.trim().length > 0;
+
+    this.detectButtonTarget.disabled = !(hasImage || hasManual);
   }
 
-  imageSelected(event) {
-    this.detectButtonTarget.disabled = event.target.files.length === 0;
+  imageSelected() {
+    this.checkButtonStates();
+  }
+
+  manualInputChanged() {
+    this.checkButtonStates();
   }
 
   ingredientCheckboxChanged() {
@@ -54,7 +67,8 @@ export default class extends Controller {
 
       // Create new list item dynamically
       const listItem = document.createElement("div");
-      listItem.className = "list-group-item d-flex align-items-center justify-content-between";
+      listItem.className =
+        "list-group-item py-3 px-3 rounded-pill shadow-sm border d-flex align-items-center justify-content-between mb-2";
 
       listItem.innerHTML = `
         <label class="d-flex align-items-center flex-grow-1">
