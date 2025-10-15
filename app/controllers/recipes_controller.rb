@@ -95,12 +95,7 @@ class RecipesController < ApplicationController
   end
 
   def process_image
-    manual_ingredients_input = params[:manual_ingredients].to_s
-    manual_ingredients = manual_ingredients_input
-      .split(/[,\n]/)
-      .map(&:strip)
-      .reject(&:blank?)
-      .join(', ')
+    manual_ingredients = processed_manual_ingredients(params)
 
     # Check if an image was uploaded
     if params[:image].blank?
@@ -173,6 +168,14 @@ class RecipesController < ApplicationController
 
   def recipe_params
     params.permit(:image)
+  end
+
+  def processed_manual_ingredients(source_params)
+    source_params[:manual_ingredients].to_s
+      .split(/[,\n]/)
+      .map(&:strip)
+      .reject(&:blank?)
+      .join(', ')
   end
 
   # Fetch recipe details from the Spoonacular API

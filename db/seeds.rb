@@ -8,7 +8,7 @@ User.destroy_all
 puts "Database cleaned!"
 
 user = User.create!(
-  email: 'admin@matchmeal.eu',
+  email: '',
   password: 'admin@matchmeal.eu',
   first_name: 'Match',
   last_name: 'Meal'
