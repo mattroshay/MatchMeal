@@ -5,17 +5,17 @@ require "open-uri"
 class RecipesController < ApplicationController
   def index
     api_key = ENV['SPOONACULAR_ACCESS_TOKEN']
-  
+
     @ingredients = params[:selected_ingredients]&.join(',') || session[:detected_ingredients]
-  
+
     if @ingredients.nil?
       flash[:error] = "No ingredients detected yet."
       redirect_to detect_ingredients_recipes_path
       return
     end
-  
+
     url = "https://api.spoonacular.com/recipes/findByIngredients?ingredients=#{@ingredients}&number=10&ranking=1&apiKey=#{api_key}"
-  
+
     begin
       # Open the URL and parse the JSON response
       @posts = []
@@ -95,10 +95,18 @@ class RecipesController < ApplicationController
   end
 
   def process_image
+    manual_ingredients = processed_manual_ingredients(params)
+
     # Check if an image was uploaded
-    unless params[:image].present?
-      flash[:error] = "Please upload an image"
-      return redirect_to detect_ingredients_recipes_path
+    if params[:image].blank?
+      if manual_ingredients.present?
+        session[:detected_ingredients] = manual_ingredients
+        redirect_to detect_ingredients_recipes_path, notice: "Ingredients added successfully!"
+      else
+        flash[:error] = "Please upload an image or enter ingredients manually"
+        redirect_to detect_ingredients_recipes_path
+      end
+      return
     end
 
     # Read the uploaded file
@@ -141,7 +149,12 @@ class RecipesController < ApplicationController
       @ingredients = response.dig("choices", 0, "message", "content")
 
       # Store ingredients in the session to pass to the next page
-      session[:detected_ingredients] = @ingredients
+      combined_ingredients = [
+        @ingredients,
+        manual_ingredients.presence
+      ].compact.reject(&:blank?).join(', ')
+
+      session[:detected_ingredients] = combined_ingredients
 
       # Redirect to the detect_ingredients page with the results
       redirect_to detect_ingredients_recipes_path, notice: "Ingredients detected successfully!"
@@ -155,6 +168,14 @@ class RecipesController < ApplicationController
 
   def recipe_params
     params.permit(:image)
+  end
+
+  def processed_manual_ingredients(source_params)
+    source_params[:manual_ingredients].to_s
+      .split(/[,\n]/)
+      .map(&:strip)
+      .reject(&:blank?)
+      .join(', ')
   end
 
   # Fetch recipe details from the Spoonacular API
