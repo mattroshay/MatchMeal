@@ -14,7 +14,7 @@ class RecipesController < ApplicationController
       return
     end
 
-    url = "https://api.spoonacular.com/recipes/findByIngredients?ingredients=#{@ingredients}&number=10&ranking=2&apiKey=#{api_key}"
+    url = "https://api.spoonacular.com/recipes/findByIngredients?ingredients=#{@ingredients}&number=10&ranking=1&apiKey=#{api_key}"
 
     begin
       # Open the URL and parse the JSON response
