@@ -182,17 +182,14 @@ class RecipesController < ApplicationController
   private
 
   def enrich_posts_with_unsplash_images
-    threads = @posts.map do |post|
-      Thread.new do
-        urls = UnsplashImageService.fetch(post["title"])
-        if urls
-          post["unsplash_small"]             = urls[:small]
-          post["unsplash_photographer_name"] = urls[:photographer_name]
-          post["unsplash_photographer_url"]  = urls[:photographer_url]
-        end
-      end
+    @posts.each do |post|
+      urls = UnsplashImageService.fetch(post["title"])
+      next unless urls
+
+      post["unsplash_small"]             = urls[:small]
+      post["unsplash_photographer_name"] = urls[:photographer_name]
+      post["unsplash_photographer_url"]  = urls[:photographer_url]
     end
-    threads.each(&:join)
   end
 
   def recipe_params
