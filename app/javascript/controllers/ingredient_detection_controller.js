@@ -36,14 +36,14 @@ export default class extends Controller {
   imageSelected() {
     const file = this.imageUploadTarget.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewImgTarget.src = e.target.result;
-        this.fileNameTarget.textContent = file.name;
-        this.uploadButtonTarget.classList.add("d-none");
-        this.imagePreviewTarget.classList.remove("d-none");
-      };
-      reader.readAsDataURL(file);
+      if (this._previewObjectUrl) {
+        URL.revokeObjectURL(this._previewObjectUrl);
+      }
+      this._previewObjectUrl = URL.createObjectURL(file);
+      this.previewImgTarget.src = this._previewObjectUrl;
+      this.fileNameTarget.textContent = file.name;
+      this.uploadButtonTarget.classList.add("d-none");
+      this.imagePreviewTarget.classList.remove("d-none");
     }
     this.checkButtonStates();
   }
