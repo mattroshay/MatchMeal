@@ -2,11 +2,23 @@
   <%= render 'shared/header', title: '' %>
 
   <div class="mt-4">
-    <%= form_with(url: process_image_recipes_path, method: :post, multipart: true, class: "needs-validation") do |form| %>
+    <%= form_with(url: process_image_recipes_path, method: :post, multipart: true, class: "needs-validation", data: { action: 'submit->ingredient-detection#formSubmitting' }) do |form| %>
       <div class="form-group mb-4 text-center">
-        <label for="image-upload" class="btn btn-primary btn-lg rounded-pill shadow-sm mb-3">
-          <i class="fa-solid fa-plus"></i> Take a pic or upload an image
-        </label>
+        <div data-ingredient-detection-target="uploadButton">
+          <label for="image-upload" class="btn btn-primary btn-lg rounded-pill shadow-sm mb-3">
+            <i class="fa-solid fa-plus"></i> Take a pic or upload an image
+          </label>
+        </div>
+        <div class="d-none" data-ingredient-detection-target="imagePreview">
+          <img src="" alt="Selected image"
+               class="rounded mb-2 shadow-sm"
+               style="max-height: 140px; max-width: 140px; object-fit: cover;"
+               data-ingredient-detection-target="previewImg">
+          <p class="text-muted small mb-2" data-ingredient-detection-target="fileName"></p>
+          <label for="image-upload" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <i class="fa-solid fa-rotate"></i> Change photo
+          </label>
+        </div>
         <%= form.file_field :image,
               id: "image-upload",
               accept: "image/*",
