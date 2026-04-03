@@ -24,8 +24,19 @@
           <% end %>
 
           <!-- Recipe Image -->
-          <% if @recipe["image"].present? %>
-            <img src="<%= @recipe["image"] %>" alt="<%= @recipe["title"] %>" class="banner-image">
+          <% img_src = @unsplash_image_url.presence || @recipe["image"].presence %>
+          <% if img_src.present? %>
+            <div class="position-relative">
+              <img src="<%= img_src %>" alt="<%= @recipe["title"] %>" class="banner-image">
+              <% if @unsplash_attribution&.dig(:name).present? %>
+                <a href="<%= @unsplash_attribution[:url] %>?utm_source=matchmeal&utm_medium=referral"
+                   target="_blank" rel="noopener noreferrer"
+                   class="position-absolute bottom-0 end-0 mb-2 me-2 text-white text-decoration-none"
+                   style="font-size:0.7rem; text-shadow:0 1px 3px rgba(0,0,0,0.7);">
+                  Photo by <%= @unsplash_attribution[:name] %> on <span class="text-decoration-underline">Unsplash</span>
+                </a>
+              <% end %>
+            </div>
           <% else %>
             <div class="bg-secondary w-100 h-100 banner-placeholder text-white text-center d-flex align-items-center justify-content-center">
               <p><em>No image available for this recipe.</em></p>
