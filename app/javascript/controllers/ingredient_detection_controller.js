@@ -7,7 +7,11 @@ export default class extends Controller {
     "ingredientCheckbox",
     "generateButton",
     "newIngredientInput",
-    "manualInput"
+    "manualInput",
+    "uploadButton",
+    "imagePreview",
+    "previewImg",
+    "fileName"
   ];
 
   connect() {
@@ -30,7 +34,24 @@ export default class extends Controller {
   }
 
   imageSelected() {
+    const file = this.imageUploadTarget.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.previewImgTarget.src = e.target.result;
+        this.fileNameTarget.textContent = file.name;
+        this.uploadButtonTarget.classList.add("d-none");
+        this.imagePreviewTarget.classList.remove("d-none");
+      };
+      reader.readAsDataURL(file);
+    }
     this.checkButtonStates();
+  }
+
+  formSubmitting() {
+    this.detectButtonTarget.disabled = true;
+    this.detectButtonTarget.innerHTML =
+      '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Finding ingredients...';
   }
 
   manualInputChanged() {
