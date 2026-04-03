@@ -28,12 +28,16 @@
           <% if img_src.present? %>
             <div class="position-relative">
               <img src="<%= img_src %>" alt="<%= @recipe["title"] %>" class="banner-image">
-              <% if @unsplash_attribution&.dig(:name).present? %>
-                <a href="<%= @unsplash_attribution[:url] %>?utm_source=matchmeal&utm_medium=referral"
+              <% attribution_name = @unsplash_attribution&.dig(:name) %>
+              <% attribution_url = @unsplash_attribution&.dig(:url) %>
+              <% if attribution_name.present? && attribution_url.present? %>
+                <% attribution_separator = attribution_url.include?("?") ? "&" : "?" %>
+                <% attribution_href = "#{attribution_url}#{attribution_separator}utm_source=matchmeal&utm_medium=referral" %>
+                <a href="<%= attribution_href %>"
                    target="_blank" rel="noopener noreferrer"
                    class="position-absolute bottom-0 end-0 mb-2 me-2 text-white text-decoration-none"
                    style="font-size:0.7rem; text-shadow:0 1px 3px rgba(0,0,0,0.7);">
-                  Photo by <%= @unsplash_attribution[:name] %> on <span class="text-decoration-underline">Unsplash</span>
+                  Photo by <%= attribution_name %> on <span class="text-decoration-underline">Unsplash</span>
                 </a>
               <% end %>
             </div>
