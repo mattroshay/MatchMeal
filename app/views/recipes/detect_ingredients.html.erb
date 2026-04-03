@@ -2,7 +2,8 @@
   <%= render 'shared/header', title: '' %>
 
   <div class="mt-4">
-    <% unless session[:detected_ingredients].present? %>
+    <% detected = session[:detected_ingredients].presence %>
+    <% if detected.nil? %>
       <%= form_with(url: process_image_recipes_path, method: :post, multipart: true, class: "needs-validation", data: { action: 'submit->ingredient-detection#formSubmitting' }) do |form| %>
         <div class="form-group mb-4 text-center">
           <div data-ingredient-detection-target="uploadButton">
@@ -57,9 +58,7 @@
                 disabled: true %>
         </div>
       <% end %>
-    <% end %>
-
-    <% if session[:detected_ingredients].present? %>
+    <% else %>
       <%= form_with(url: recipes_path, method: :get, local: true) do |form| %>
         <div class="mt-5">
           <h2 class="text-center">Voila!</h2>
@@ -76,7 +75,7 @@
           </div>
 
           <div class="list-group mt-3">
-            <% session[:detected_ingredients].split(',').each_with_index do |ingredient, index| %>
+            <% detected.split(',').each_with_index do |ingredient, index| %>
               <div class="list-group-item py-3 px-3 rounded-pill shadow-sm border d-flex align-items-center justify-content-between mb-2">
                 <label class="d-flex align-items-center flex-grow-1">
                   <%= check_box_tag 'selected_ingredients[]', ingredient.strip, true,
