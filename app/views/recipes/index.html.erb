@@ -10,13 +10,17 @@
               <div class="position-relative p-2 favorite-card rounded-top-4">
                 <% img_src = post["unsplash_small"].presence || spoonacular_image_url(post["image"]).presence || "https://via.placeholder.com/636x393" %>
                 <img src="<%= img_src %>" alt="<%= post["title"] %>" class="card-img-top rounded-4 object-fit-cover w-100" style="height:220px" loading="lazy" />
-                <% if post["unsplash_photographer_name"].present? %>
-                  <a href="<%= post["unsplash_photographer_url"] %>?utm_source=matchmeal&utm_medium=referral"
+                <% photographer_name = post["unsplash_photographer_name"] %>
+                <% photographer_url = post["unsplash_photographer_url"] %>
+                <% if photographer_name.present? && photographer_url.present? %>
+                  <% separator = photographer_url.include?("?") ? "&" : "?" %>
+                  <% attribution_url = "#{photographer_url}#{separator}utm_source=matchmeal&utm_medium=referral" %>
+                  <a href="<%= attribution_url %>"
                      target="_blank" rel="noopener noreferrer"
                      class="position-absolute bottom-0 end-0 mb-2 me-3 text-white text-decoration-none z-1"
                      style="font-size:0.65rem; text-shadow:0 1px 3px rgba(0,0,0,0.7);"
                      onclick="event.stopPropagation()">
-                    <%= post["unsplash_photographer_name"] %> / <span class="text-decoration-underline">Unsplash</span>
+                    <%= photographer_name %> / <span class="text-decoration-underline">Unsplash</span>
                   </a>
                 <% end %>
               </div>
