@@ -21,6 +21,7 @@ class RecipesController < ApplicationController
       @posts = []
       response = URI.parse(url).read
       @posts = JSON.parse(response)
+      enrich_posts_with_unsplash_images
     rescue OpenURI::HTTPError => e
       # Handle errors (e.g., API down, invalid URL)
       @posts = []
@@ -37,6 +38,12 @@ class RecipesController < ApplicationController
     begin
       response = URI.parse(url).read
       @recipe = JSON.parse(response)
+      urls = UnsplashImageService.fetch(@recipe["title"])
+      if urls
+        @unsplash_image_url      = urls[:regular]
+        @unsplash_attribution    = { name: urls[:photographer_name], url: urls[:photographer_url] }
+        UnsplashImageService.trigger_download(urls[:download_location])
+      end
 
     rescue OpenURI::HTTPError => e
       flash[:error] = "Unable to fetch recipe details: #{e.message}"
@@ -66,13 +73,16 @@ class RecipesController < ApplicationController
 
       # Build the recipe in the database
       @recipe = Recipe.find_or_initialize_by(id: recipe_id)
+      unsplash_urls = UnsplashImageService.fetch(recipe_data["title"])
+      best_image = unsplash_urls&.fetch(:regular).presence || recipe_data["image"]
+
       @recipe.assign_attributes(
         name: recipe_data["title"],
         description: recipe_data["summary"],
         ingredients: recipe_data["extendedIngredients"]&.map { |i| i["original"] }&.join("\n"),
         cooking_time: recipe_data["readyInMinutes"],
         rating: (recipe_data["spoonacularScore"].to_f / 20).round(1),
-        image: recipe_data["image"],
+        image: best_image,
         search_id: Search.first.id # Ensure this matches your schema
       )
 
@@ -170,6 +180,17 @@ class RecipesController < ApplicationController
   end
 
   private
+
+  def enrich_posts_with_unsplash_images
+    @posts.each do |post|
+      urls = UnsplashImageService.fetch(post["title"])
+      next unless urls
+
+      post["unsplash_small"]             = urls[:small]
+      post["unsplash_photographer_name"] = urls[:photographer_name]
+      post["unsplash_photographer_url"]  = urls[:photographer_url]
+    end
+  end
 
   def recipe_params
     params.permit(:image)
