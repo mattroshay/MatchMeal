@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
     # Add a custom POST route with a named route
     post 'process_image', to: 'recipes#process_image', on: :collection, as: :process_image
+    delete 'clear_ingredients', to: 'recipes#clear_ingredients', on: :collection, as: :clear_ingredients
   end
 
   resources :favorites, only: [:index]

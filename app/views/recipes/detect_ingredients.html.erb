@@ -59,6 +59,10 @@
         </div>
       <% end %>
     <% else %>
+      <div class="d-flex justify-content-end mb-3">
+        <%= button_to "Detect again", clear_ingredients_recipes_path, method: :delete,
+              class: "btn btn-outline-secondary btn-sm rounded-pill shadow-sm" %>
+      </div>
       <%= form_with(url: recipes_path, method: :get, local: true) do |form| %>
         <div class="mt-5">
           <h2 class="text-center">Voila!</h2>

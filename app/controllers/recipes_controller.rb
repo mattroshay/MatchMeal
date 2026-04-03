@@ -94,6 +94,11 @@ class RecipesController < ApplicationController
     # Render the form for uploading an image
   end
 
+  def clear_ingredients
+    session.delete(:detected_ingredients)
+    redirect_to detect_ingredients_recipes_path
+  end
+
   def process_image
     manual_ingredients = processed_manual_ingredients(params)
 
