@@ -19,6 +19,13 @@ export default class extends Controller {
     this.checkGenerateButtonState();
   }
 
+  disconnect() {
+    if (this._previewObjectUrl) {
+      URL.revokeObjectURL(this._previewObjectUrl);
+      this._previewObjectUrl = null;
+    }
+  }
+
   checkButtonStates() {
     if (!this.hasDetectButtonTarget) {
       return;
@@ -35,15 +42,20 @@ export default class extends Controller {
 
   imageSelected() {
     const file = this.imageUploadTarget.files[0];
+    if (this._previewObjectUrl) {
+      URL.revokeObjectURL(this._previewObjectUrl);
+      this._previewObjectUrl = null;
+    }
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewImgTarget.src = e.target.result;
-        this.fileNameTarget.textContent = file.name;
-        this.uploadButtonTarget.classList.add("d-none");
-        this.imagePreviewTarget.classList.remove("d-none");
-      };
-      reader.readAsDataURL(file);
+      this._previewObjectUrl = URL.createObjectURL(file);
+      this.previewImgTarget.src = this._previewObjectUrl;
+      this.fileNameTarget.textContent = file.name;
+      this.uploadButtonTarget.classList.add("d-none");
+      this.imagePreviewTarget.classList.remove("d-none");
+    } else {
+      this.previewImgTarget.src = "";
+      this.uploadButtonTarget.classList.remove("d-none");
+      this.imagePreviewTarget.classList.add("d-none");
     }
     this.checkButtonStates();
   }
