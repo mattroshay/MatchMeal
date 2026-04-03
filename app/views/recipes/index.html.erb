@@ -6,40 +6,38 @@
       <% @posts.each do |post| %>
         <div class="col-12 col-md-6 col-xl-4">
           <div class="border-0 shadow-lg rounded-4 h-100 position-relative">
-            <a href="<%= recipe_path(post["id"]) %>" class="stretched-link text-decoration-none">
-              <div class="position-relative p-2 favorite-card rounded-top-4">
-                <% img_src = post["unsplash_small"].presence || spoonacular_image_url(post["image"]).presence || "https://via.placeholder.com/636x393" %>
-                <img src="<%= img_src %>" alt="<%= post["title"] %>" class="card-img-top rounded-4 object-fit-cover w-100" style="height:220px" loading="lazy" />
-                <% photographer_name = post["unsplash_photographer_name"] %>
-                <% photographer_url = post["unsplash_photographer_url"] %>
-                <% if photographer_name.present? && photographer_url.present? %>
-                  <% separator = photographer_url.include?("?") ? "&" : "?" %>
-                  <% attribution_url = "#{photographer_url}#{separator}utm_source=matchmeal&utm_medium=referral" %>
-                  <a href="<%= attribution_url %>"
-                     target="_blank" rel="noopener noreferrer"
-                     class="position-absolute bottom-0 end-0 mb-2 me-3 text-white text-decoration-none z-1"
-                     style="font-size:0.65rem; text-shadow:0 1px 3px rgba(0,0,0,0.7);"
-                     onclick="event.stopPropagation()">
-                    <%= photographer_name %> / <span class="text-decoration-underline">Unsplash</span>
-                  </a>
-                <% end %>
-              </div>
+            <a href="<%= recipe_path(post["id"]) %>" class="stretched-link text-decoration-none"></a>
+            <div class="position-relative p-2 favorite-card rounded-top-4">
+              <% img_src = post["unsplash_small"].presence || spoonacular_image_url(post["image"]).presence || "https://via.placeholder.com/636x393" %>
+              <img src="<%= img_src %>" alt="<%= post["title"] %>" class="card-img-top rounded-4 object-fit-cover w-100" style="height:220px" loading="lazy" />
+              <% photographer_name = post["unsplash_photographer_name"] %>
+              <% photographer_url = post["unsplash_photographer_url"] %>
+              <% if photographer_name.present? && photographer_url.present? %>
+                <% separator = photographer_url.include?("?") ? "&" : "?" %>
+                <% attribution_url = "#{photographer_url}#{separator}utm_source=matchmeal&utm_medium=referral" %>
+                <a href="<%= attribution_url %>"
+                   target="_blank" rel="noopener noreferrer"
+                   class="position-absolute bottom-0 end-0 mb-2 me-3 text-white text-decoration-none"
+                   style="font-size:0.65rem; text-shadow:0 1px 3px rgba(0,0,0,0.7); z-index: 2;">
+                  <%= photographer_name %> / <span class="text-decoration-underline">Unsplash</span>
+                </a>
+              <% end %>
+            </div>
 
-              <div class="favorite-body text-center bg-my-dark-blue text-white p-4" style="border-radius: 0 0 15px 15px;">
-                <h5 class="card-title text-my-yellow mb-3 d-flex justify-content-center align-items-center gap-2">
-                  <span class="text-start"><%= post["title"] %></span>
+            <div class="favorite-body text-center bg-my-dark-blue text-white p-4" style="border-radius: 0 0 15px 15px;">
+              <h5 class="card-title text-my-yellow mb-3 d-flex justify-content-center align-items-center gap-2">
+                <span class="text-start"><%= post["title"] %></span>
 
-                </h5>
+              </h5>
 
-                <p class="card-text text-center mb-2">
-                  <i class="fas fa-utensils text-primary"></i> <strong>Used ingredients: <%= post["usedIngredientCount"] %></strong>
-                </p>
-                <p class="card-text text-center mb-2">
-                  <i class="fas fa-exclamation-circle text-primary"></i> <strong>Missing ingredients: <%= post["missedIngredientCount"] %></strong>
-                </p>
+              <p class="card-text text-center mb-2">
+                <i class="fas fa-utensils text-primary"></i> <strong>Used ingredients: <%= post["usedIngredientCount"] %></strong>
+              </p>
+              <p class="card-text text-center mb-2">
+                <i class="fas fa-exclamation-circle text-primary"></i> <strong>Missing ingredients: <%= post["missedIngredientCount"] %></strong>
+              </p>
 
-              </div>
-            </a>
+            </div>
           </div>
         </div>
       <% end %>
