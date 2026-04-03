@@ -2,62 +2,67 @@
   <%= render 'shared/header', title: '' %>
 
   <div class="mt-4">
-    <%= form_with(url: process_image_recipes_path, method: :post, multipart: true, class: "needs-validation", data: { action: 'submit->ingredient-detection#formSubmitting' }) do |form| %>
-      <div class="form-group mb-4 text-center">
-        <div data-ingredient-detection-target="uploadButton">
-          <label for="image-upload" class="btn btn-primary btn-lg rounded-pill shadow-sm mb-3">
-            <i class="fa-solid fa-plus"></i> Take a pic or upload an image
-          </label>
+    <% detected = session[:detected_ingredients].presence %>
+    <% if detected.nil? %>
+      <%= form_with(url: process_image_recipes_path, method: :post, multipart: true, class: "needs-validation", data: { action: 'submit->ingredient-detection#formSubmitting' }) do |form| %>
+        <div class="form-group mb-4 text-center">
+          <div data-ingredient-detection-target="uploadButton">
+            <label for="image-upload" class="btn btn-primary btn-lg rounded-pill shadow-sm mb-3">
+              <i class="fa-solid fa-plus"></i> Take a pic or upload an image
+            </label>
+          </div>
+          <div class="d-none" data-ingredient-detection-target="imagePreview">
+            <img src="about:blank" alt="Selected image"
+                 class="rounded mb-2 shadow-sm"
+                 style="max-height: 140px; max-width: 140px; object-fit: cover;"
+                 data-ingredient-detection-target="previewImg">
+            <p class="text-muted small mb-2" data-ingredient-detection-target="fileName"></p>
+            <label for="image-upload" class="btn btn-outline-secondary btn-sm rounded-pill">
+              <i class="fa-solid fa-rotate"></i> Change photo
+            </label>
+          </div>
+          <%= form.file_field :image,
+                id: "image-upload",
+                accept: "image/*",
+                class: "d-none",
+                data: {
+                  'ingredient-detection-target': 'imageUpload',
+                  action: 'change->ingredient-detection#imageSelected'
+                } %>
         </div>
-        <div class="d-none" data-ingredient-detection-target="imagePreview">
-          <img src="about:blank" alt="Selected image"
-               class="rounded mb-2 shadow-sm"
-               style="max-height: 140px; max-width: 140px; object-fit: cover;"
-               data-ingredient-detection-target="previewImg">
-          <p class="text-muted small mb-2" data-ingredient-detection-target="fileName"></p>
-          <label for="image-upload" class="btn btn-outline-secondary btn-sm rounded-pill">
-            <i class="fa-solid fa-rotate"></i> Change photo
+
+        <div class="form-group mb-4">
+          <label for="manual_ingredients" class="form-label text-center w-100 fw-semibold">
+            Or enter ingredients manually
           </label>
+          <%= form.text_field :manual_ingredients,
+                id: "manual_ingredients",
+                placeholder: "e.g., tomatoes, basil, mozzarella",
+                class: "form-control form-control-lg rounded-pill shadow-sm",
+                data: {
+                  'ingredient-detection-target': 'manualInput',
+                  action: 'input->ingredient-detection#manualInputChanged'
+                } %>
+          <small class="form-text text-muted text-center d-block mt-2">
+            Separate multiple ingredients with commas.
+          </small>
         </div>
-        <%= form.file_field :image,
-              id: "image-upload",
-              accept: "image/*",
-              class: "d-none",
-              data: {
-                'ingredient-detection-target': 'imageUpload',
-                action: 'change->ingredient-detection#imageSelected'
-              } %>
-      </div>
 
-      <div class="form-group mb-4">
-        <label for="manual_ingredients" class="form-label text-center w-100 fw-semibold">
-          Or enter ingredients manually
-        </label>
-        <%= form.text_field :manual_ingredients,
-              id: "manual_ingredients",
-              placeholder: "e.g., tomatoes, basil, mozzarella",
-              class: "form-control form-control-lg rounded-pill shadow-sm",
-              data: {
-                'ingredient-detection-target': 'manualInput',
-                action: 'input->ingredient-detection#manualInputChanged'
-              } %>
-        <small class="form-text text-muted text-center d-block mt-2">
-          Separate multiple ingredients with commas.
-        </small>
+        <div class="d-flex justify-content-center">
+          <%= form.button "Find my ingredients",
+                type: "submit",
+                class: 'btn btn-primary btn-lg rounded-pill shadow-sm mb-3',
+                data: {
+                  'ingredient-detection-target': 'detectButton'
+                },
+                disabled: true %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="d-flex justify-content-end mb-3">
+        <%= button_to "Detect again", clear_ingredients_recipes_path, method: :delete,
+              class: "btn btn-outline-secondary btn-sm rounded-pill shadow-sm" %>
       </div>
-
-      <div class="d-flex justify-content-center">
-        <%= form.button "Find my ingredients",
-              type: "submit",
-              class: 'btn btn-primary btn-lg rounded-pill shadow-sm mb-3',
-              data: {
-                'ingredient-detection-target': 'detectButton'
-              },
-              disabled: true %>
-      </div>
-    <% end %>
-
-    <% if session[:detected_ingredients].present? %>
       <%= form_with(url: recipes_path, method: :get, local: true) do |form| %>
         <div class="mt-5">
           <h2 class="text-center">Voila!</h2>
@@ -74,7 +79,7 @@
           </div>
 
           <div class="list-group mt-3">
-            <% session[:detected_ingredients].split(',').each_with_index do |ingredient, index| %>
+            <% detected.split(',').each_with_index do |ingredient, index| %>
               <div class="list-group-item py-3 px-3 rounded-pill shadow-sm border d-flex align-items-center justify-content-between mb-2">
                 <label class="d-flex align-items-center flex-grow-1">
                   <%= check_box_tag 'selected_ingredients[]', ingredient.strip, true,
