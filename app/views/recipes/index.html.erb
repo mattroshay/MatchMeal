@@ -4,14 +4,14 @@
   <% if @posts.any? %>
     <div class="row gy-4">
       <% @posts.each do |post| %>
-        <div class="col-12">
-          <div class="border-0 shadow-lg rounded-lg" style="$background-color; position: relative;">
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="border-0 shadow-lg rounded-lg h-100" style="$background-color; position: relative;">
             <a href="<%= recipe_path(post["id"]) %>" class="stretched-link text-decoration-none">
               <div class="position-relative p-2 favorite-card rounded-top-4">
                 <% if post["image"].present? %>
-                  <img src="<%= post["image"] %>" alt="<%= post["title"] %>" class="card-img-top rounded-4 img-fluid object-fit-cover" style="max-height:25vh" />
+                  <img src="<%= post["image"].gsub("-312x231", "-636x393") %>" alt="<%= post["title"] %>" class="card-img-top rounded-4 object-fit-cover w-100" style="height:220px" />
                 <% else %>
-                  <img src="https://via.placeholder.com/400" alt="Recipe image" class="card-img-top rounded-4 img-fluid" style="max-height:50vh" />
+                  <img src="https://via.placeholder.com/636x393" alt="Recipe image" class="card-img-top rounded-4 object-fit-cover w-100" style="height:220px" />
                 <% end %>
               </div>
 
